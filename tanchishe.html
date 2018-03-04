@@ -1,0 +1,171 @@
+<html>
+    <head>
+        <script>
+            //绘制地图
+            function Map()
+            {
+                var w=800;
+                var h=400;
+                
+                this.showmap=function()
+                {
+                    var ditu=document.createElement('div');
+                    ditu.style.width=w+'px';
+                    ditu.style.height=h+'px';
+                    //ditu.style.backgroundColor='pink';
+                    ditu.style.backgroundImage='url(./12.jpg)';
+                    
+                    document.body.appendChild(ditu);
+                }
+            }
+            
+            //绘制食物
+            function Food()
+            {
+                var len=20;
+                this.foodX=0;
+                this.foodY=0;
+                var piece=null ;
+                
+                this.showfood=function()
+                {
+                    if(piece==null)
+                    {
+                        piece=document.createElement('div');
+                        piece.style.width=piece.style.height=len+'px';
+                        piece.style.backgroundColor='green';
+
+                        piece.style.position='absolute';
+                        document.body.appendChild(piece);
+                    }
+                   
+                    this.foodX=Math.floor(Math.random()*40);
+                    this.foodY=Math.floor(Math.random()*20);
+                    piece.style.left=this.foodX*len+'px';
+                    piece.style.top=this.foodY*len+'px';                
+                }
+            }            
+            
+            //绘制小蛇
+            function Snake()
+            {
+                var len=20;
+                
+                var snakebody=[[0,1,'green',null],[1,1,'green',null],[2,1,'green',null],[3,1,'red',null]];
+                this.redirect='right';
+                this.showsnake=function()
+                {
+                    for(var i=0;i<snakebody.length;i++)
+                    {
+                        if(snakebody[i][3]===null)
+                        {
+                             snakebody[i][3]=document.createElement('div');
+                        
+                             snakebody[i][3].style.width=snakebody[i][3].style.height=len+'px';
+                             snakebody[i][3].style.backgroundColor=snakebody[i][2];
+                             snakebody[i][3].style.position='absolute';
+                             document.body.appendChild(snakebody[i][3]);
+                        }
+                                                                   
+                        snakebody[i][3].style.left=snakebody[i][0]*len+'px';
+                        snakebody[i][3].style.top=snakebody[i][1]*len+'px';
+                        
+                    }
+                }
+                
+                this.movesnake = function(){
+                for(var n=0; n<snakebody.length-1; n++){
+                    snakebody[n][0] = snakebody[n+1][0];
+                    snakebody[n][1] = snakebody[n+1][1];
+                }
+                if(this.redirect=="right"){
+                    snakebody[snakebody.length-1][0] += 1;
+                }
+                if(this.redirect=="left"){
+                    snakebody[snakebody.length-1][0] -= 1;
+                }
+                if(this.redirect=="down"){
+                    snakebody[snakebody.length-1][1] += 1;
+                }
+                if(this.redirect=="up"){
+                    snakebody[snakebody.length-1][1] -= 1;
+                }
+                
+                //定义蛇头的坐标
+                var snakeX=snakebody[snakebody.length-1][0];
+                var snakeY=snakebody[snakebody.length-1][1];
+                
+                //蛇头吃到食物，增加蛇节，重新生成食物
+                if(snakeX==food.foodX && snakeY==food.foodY)
+                {
+                    var newjie=[snakebody[0][0],snakebody[0][1],'green',null];
+                    snakebody.unshift(newjie);
+                    
+                    food.showfood();
+                }
+                
+                //控制小蛇在范围内移动
+                if(snakeX<0 || snakeX>39 || snakeY<0 || snakeY>19)
+                {
+                    alert('game over out of bounds');
+                    clearInterval(mytime);
+                    return false;
+                }
+                
+                //不能吃到自己
+                for(var j=0;j<snakebody.length-1;j++)
+                {
+                    if(snakeX==snakebody[j][0] && snakeY==snakebody[j][1])
+                    {
+                        alert("game over killed by yourself");
+                        clearInterval(mytime);
+                        return false;
+                    }
+                }
+                
+                this.showsnake();
+                }
+            }
+            
+            window.onload=function()
+            {
+                var map=new  Map();
+                map.showmap();
+                
+                food=new Food();
+                food.showfood();
+                
+                snake=new Snake();
+                snake.showsnake();
+                mytime=setInterval("snake.movesnake()",200);
+                
+                document.onkeydown=function(evt)
+                {
+                    var num=evt.keyCode;
+                    if(num==40 && snake.redirect!='up')
+                    {
+                        snake.redirect="down";
+                    }
+                    if(num==38 && snake.redirect!='down')
+                    {
+                        snake.redirect="up";
+                    }
+                    if(num==37 && snake.redirect!='right')
+                    {
+                        snake.redirect="left";
+                    }
+                    if(num==39 && snake.redirect!='left')
+                    {
+                        snake.redirect="right";
+                    }
+                }
+            }           
+        </script>
+        <style>
+            body{margin:0}; 
+        </style>
+    </head>
+    
+    <body>
+    </body>
+</html>
